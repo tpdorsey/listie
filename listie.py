@@ -2,7 +2,7 @@ import os
 import sys
 
 from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QAction, QFontDatabase, QIcon
+from PyQt6.QtGui import QAction, QFontDatabase, QIcon, QKeySequence
 from PyQt6.QtPrintSupport import QPrintDialog
 from PyQt6.QtWidgets import (
     QApplication,
@@ -173,9 +173,23 @@ class MainWindow(QMainWindow):
 
         sort_action = QAction("Sort Lines", self)
         sort_action.setStatusTip("Sort text alphabetically")
+        sort_action.setShortcut(QKeySequence("Meta+Shift+Down"))
         sort_action.triggered.connect(self.sort_lines)
         sort_toolbar.addAction(sort_action)
         sort_menu.addAction(sort_action)
+
+        clear_action = QAction("Clear Page", self)
+        clear_action.setStatusTip("Clear the document")
+        clear_action.triggered.connect(self.clear_document)
+        edit_toolbar.addAction(clear_action)
+        edit_menu.addAction(clear_action)
+
+        help_menu = self.menuBar().addMenu("&Help")
+
+        about_action = QAction("About Listie", self)
+        about_action.setStatusTip("About this application")
+        about_action.triggered.connect(self.about)
+        help_menu.addAction(about_action)
 
         self.update_title()
         self.show()
@@ -265,6 +279,22 @@ class MainWindow(QMainWindow):
         sorted_text = "\n".join(sorted_lines)
         # Set sorted text back to the QTextEdit
         self.editor.setPlainText(sorted_text)
+
+    def clear_document(self):
+        # Clear the editor
+        self.editor.clear()
+
+    def about(self):
+        QMessageBox.about(
+            self,
+            "About Listie",
+            (
+                "<h2>Listie</h2>"
+                "<p>Version 1.0</p>"
+                "<p>A lightweight text editor for sorting, editing, "
+                "and managing lists, built using PyQt6.</p>"
+            ),
+        )
 
 
 if __name__ == "__main__":
