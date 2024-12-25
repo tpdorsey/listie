@@ -201,10 +201,11 @@ class MainWindow(QMainWindow):
         dlg.show()
 
     def file_open(self):
+        home_dir = os.path.expanduser("~")
         path, _ = QFileDialog.getOpenFileName(
             self,
             "Open file",
-            "",
+            home_dir,
             "Text documents (*.txt);;All files (*.*)",
         )
 
@@ -229,10 +230,11 @@ class MainWindow(QMainWindow):
         self._save_to_path(self.path)
 
     def file_saveas(self):
+        home_dir = os.path.expanduser("~")
         path, _ = QFileDialog.getSaveFileName(
             self,
             "Save file",
-            "",
+            home_dir,
             "Text documents (*.txt);;All files (*.*)",
         )
 
@@ -262,7 +264,7 @@ class MainWindow(QMainWindow):
 
     def update_title(self):
         self.setWindowTitle(
-            "%s - Listie" % (os.path.basename(self.path) if self.path else "Untitled")
+            "%s" % (os.path.basename(self.path) if self.path else "")
         )
 
     def edit_toggle_wrap(self):
