@@ -171,14 +171,20 @@ class MainWindow(QMainWindow):
         self.addToolBar(sort_toolbar)
         sort_menu = self.menuBar().addMenu("&Sort")
 
-        sort_action = QAction("Sort Lines", self)
+        sort_action = QAction(QIcon(os.path.join(basedir, "images", "arrow-curve-down.png")),
+            "Sort Lines", 
+            self
+        )
         sort_action.setStatusTip("Sort text alphabetically")
         sort_action.setShortcut(QKeySequence("Meta+Shift+Down"))
         sort_action.triggered.connect(self.sort_lines)
         sort_toolbar.addAction(sort_action)
         sort_menu.addAction(sort_action)
 
-        clear_action = QAction("Clear Page", self)
+        clear_action = QAction(QIcon(os.path.join(basedir, "images", "document-clear.png")),
+            "Clear Page", 
+            self
+        )
         clear_action.setStatusTip("Clear the document")
         clear_action.triggered.connect(self.clear_document)
         edit_toolbar.addAction(clear_action)
