@@ -48,104 +48,86 @@ class MainWindow(QMainWindow):
         self.status = QStatusBar()
         self.setStatusBar(self.status)
 
-        file_toolbar = QToolBar("File")
-        file_toolbar.setIconSize(QSize(14, 14))
-        self.addToolBar(file_toolbar)
+        # File menu and commands
         file_menu = self.menuBar().addMenu("&File")
 
         open_file_action = QAction(
-            QIcon(os.path.join(basedir, "images", "blue-folder-open-document.png")),
-            "Open file...",
-            self,
+            "Open...",
+            self
         )
         open_file_action.setStatusTip("Open file")
         open_file_action.triggered.connect(self.file_open)
         file_menu.addAction(open_file_action)
-        file_toolbar.addAction(open_file_action)
 
         save_file_action = QAction(
-            QIcon(os.path.join(basedir, "images", "disk.png")), "Save", self
+            "Save...", 
+            self
         )
         save_file_action.setStatusTip("Save current page")
         save_file_action.triggered.connect(self.file_save)
         file_menu.addAction(save_file_action)
-        file_toolbar.addAction(save_file_action)
 
         saveas_file_action = QAction(
-            QIcon(os.path.join(basedir, "images", "disk--pencil.png")),
             "Save As...",
-            self,
+            self
         )
         saveas_file_action.setStatusTip("Save current page to specified file")
         saveas_file_action.triggered.connect(self.file_saveas)
         file_menu.addAction(saveas_file_action)
-        file_toolbar.addAction(saveas_file_action)
 
         print_action = QAction(
-            QIcon(os.path.join(basedir, "images", "printer.png")),
             "Print...",
             self,
         )
         print_action.setStatusTip("Print current page")
         print_action.triggered.connect(self.file_print)
         file_menu.addAction(print_action)
-        file_toolbar.addAction(print_action)
 
-        edit_toolbar = QToolBar("Edit")
-        edit_toolbar.setIconSize(QSize(16, 16))
-        self.addToolBar(edit_toolbar)
+        # Edit menu and commands
         edit_menu = self.menuBar().addMenu("&Edit")
 
         undo_action = QAction(
-            QIcon(os.path.join(basedir, "images", "arrow-curve-180-left.png")),
             "Undo",
-            self,
+            self
         )
         undo_action.setStatusTip("Undo last change")
         undo_action.triggered.connect(self.editor.undo)
-        edit_toolbar.addAction(undo_action)
         edit_menu.addAction(undo_action)
 
         redo_action = QAction(
-            QIcon(os.path.join(basedir, "images", "arrow-curve.png")),
             "Redo",
-            self,
+            self
         )
         redo_action.setStatusTip("Redo last change")
         redo_action.triggered.connect(self.editor.redo)
-        edit_toolbar.addAction(redo_action)
         edit_menu.addAction(redo_action)
 
         edit_menu.addSeparator()
 
-        cut_action = QAction(QIcon(os.path.join(basedir, "images", "scissors.png")), "Cut", self)
+        cut_action = QAction(
+            "Cut", self
+        )
         cut_action.setStatusTip("Cut selected text")
         cut_action.triggered.connect(self.editor.cut)
-        edit_toolbar.addAction(cut_action)
         edit_menu.addAction(cut_action)
 
         copy_action = QAction(
-            QIcon(os.path.join(basedir, "images", "document-copy.png")),
             "Copy",
             self,
         )
         copy_action.setStatusTip("Copy selected text")
         copy_action.triggered.connect(self.editor.copy)
-        edit_toolbar.addAction(copy_action)
         edit_menu.addAction(copy_action)
 
         paste_action = QAction(
-            QIcon(os.path.join(basedir, "images", "clipboard-paste-document-text.png")),
             "Paste",
             self,
         )
         paste_action.setStatusTip("Paste from clipboard")
         paste_action.triggered.connect(self.editor.paste)
-        edit_toolbar.addAction(paste_action)
         edit_menu.addAction(paste_action)
 
         select_action = QAction(
-            QIcon(os.path.join(basedir, "images", "selection-input.png")),
             "Select all",
             self,
         )
@@ -156,7 +138,6 @@ class MainWindow(QMainWindow):
         edit_menu.addSeparator()
 
         wrap_action = QAction(
-            QIcon(os.path.join(basedir, "images", "arrow-continue.png")),
             "Wrap text to window",
             self,
         )
@@ -166,28 +147,24 @@ class MainWindow(QMainWindow):
         wrap_action.triggered.connect(self.edit_toggle_wrap)
         edit_menu.addAction(wrap_action)
 
-        sort_toolbar = QToolBar("Sort")
-        sort_toolbar.setIconSize(QSize(14, 14))
-        self.addToolBar(sort_toolbar)
+        # Sort menu and commands
         sort_menu = self.menuBar().addMenu("&Sort")
 
-        sort_action = QAction(QIcon(os.path.join(basedir, "images", "arrow-curve-down.png")),
+        sort_action = QAction(
             "Sort Lines", 
             self
         )
         sort_action.setStatusTip("Sort text alphabetically")
         sort_action.setShortcut(QKeySequence("Meta+Shift+Down"))
         sort_action.triggered.connect(self.sort_lines)
-        sort_toolbar.addAction(sort_action)
         sort_menu.addAction(sort_action)
 
-        clear_action = QAction(QIcon(os.path.join(basedir, "images", "document-clear.png")),
+        clear_action = QAction(
             "Clear Page", 
             self
         )
         clear_action.setStatusTip("Clear the document")
         clear_action.triggered.connect(self.clear_document)
-        edit_toolbar.addAction(clear_action)
         edit_menu.addAction(clear_action)
 
         help_menu = self.menuBar().addMenu("&Help")
@@ -298,7 +275,7 @@ class MainWindow(QMainWindow):
             "About Listie",
             (
                 "<h2>Listie</h2>"
-                "<p>Version 1.0</p>"
+                "<p>Version 2.0</p>"
                 "<p>A lightweight text editor for sorting, editing, "
                 "and managing lists, built using PyQt6.</p>"
             ),
