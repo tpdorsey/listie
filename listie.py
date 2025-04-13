@@ -1,8 +1,8 @@
 import os
 import sys
 
-from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QAction, QFontDatabase, QIcon, QKeySequence
+from PyQt6.QtCore import QEvent
+from PyQt6.QtGui import QAction, QFontDatabase, QKeySequence
 from PyQt6.QtPrintSupport import QPrintDialog
 from PyQt6.QtWidgets import (
     QApplication,
@@ -11,7 +11,6 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QStatusBar,
-    QToolBar,
     QVBoxLayout,
     QWidget,
 )
@@ -24,6 +23,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setGeometry(100, 100, 600, 400)
+        self.auto_sort = True  # Default to true since sort_option.setChecked(True)
 
         layout = QVBoxLayout()
         self.editor = (
@@ -34,6 +34,7 @@ class MainWindow(QMainWindow):
         fixedfont = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
         fixedfont.setPointSize(12)
         self.editor.setFont(fixedfont)
+        self.editor.installEventFilter(self)
 
         # self.path holds the path of the currently open file.
         # If none, we haven't got a file open yet (or creating new).
@@ -124,7 +125,8 @@ class MainWindow(QMainWindow):
             self,
         )
         paste_action.setStatusTip("Paste from clipboard")
-        paste_action.triggered.connect(self.editor.paste)
+        paste_action.triggered.connect(self.paste_override)
+        paste_action.setShortcut(QKeySequence.StandardKey.Paste)
         edit_menu.addAction(paste_action)
 
         select_action = QAction(
@@ -147,18 +149,6 @@ class MainWindow(QMainWindow):
         wrap_action.triggered.connect(self.edit_toggle_wrap)
         edit_menu.addAction(wrap_action)
 
-        # Sort menu and commands
-        sort_menu = self.menuBar().addMenu("&Sort")
-
-        sort_action = QAction(
-            "Sort Lines", 
-            self
-        )
-        sort_action.setStatusTip("Sort text alphabetically")
-        sort_action.setShortcut(QKeySequence("Meta+Shift+Down"))
-        sort_action.triggered.connect(self.sort_lines)
-        sort_menu.addAction(sort_action)
-
         clear_action = QAction(
             "Clear Page", 
             self
@@ -167,6 +157,32 @@ class MainWindow(QMainWindow):
         clear_action.triggered.connect(self.clear_document)
         edit_menu.addAction(clear_action)
 
+
+        # Sort menu and commands
+        sort_menu = self.menuBar().addMenu("&Sort")
+
+        sort_action = QAction(
+            "Sort Lines", 
+            self
+        )
+        sort_action.setStatusTip("Sort text alphabetically")
+        sort_action.setShortcut(QKeySequence("Meta+Shift+]"))
+        sort_action.triggered.connect(self.sort_lines)
+        sort_menu.addAction(sort_action)
+
+        sort_menu.addSeparator()
+
+        sort_option = QAction(
+            "Sort Automatically",
+            self
+        )
+        sort_option.setStatusTip("Sort items on paste")
+        sort_option.setCheckable(True)
+        sort_option.setChecked(True)
+        sort_option.triggered.connect(self.sort_toggle_sort)
+        sort_menu.addAction(sort_option)
+
+        # Help menu
         help_menu = self.menuBar().addMenu("&Help")
 
         about_action = QAction("About Listie", self)
@@ -251,7 +267,14 @@ class MainWindow(QMainWindow):
         )
 
     def edit_toggle_wrap(self):
-        self.editor.setLineWrapMode(1 if self.editor.lineWrapMode() == 0 else 0)
+        if self.editor.lineWrapMode() == QPlainTextEdit.LineWrapMode.NoWrap:
+            self.editor.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+        else:
+            self.editor.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+
+    def sort_toggle_sort(self):
+        self.auto_sort = self.sender().isChecked()
+        print(f"auto_sort set to: {self.auto_sort}")
 
     def sort_lines(self):
         # Get current text from the QTextEdit
@@ -264,6 +287,12 @@ class MainWindow(QMainWindow):
         sorted_text = "\n".join(sorted_lines)
         # Set sorted text back to the QTextEdit
         self.editor.setPlainText(sorted_text)
+
+    def paste_override(self):
+        self.editor.paste()
+        print(f"Pasting with auto_sort: {self.auto_sort}")
+        if self.auto_sort:
+            self.sort_lines()
 
     def clear_document(self):
         # Clear the editor
@@ -280,6 +309,13 @@ class MainWindow(QMainWindow):
                 "and managing lists, built using PyQt6.</p>"
             ),
         )
+    
+    def eventFilter(self, source, event):
+        if (source is self.editor and event.type() == QEvent.Type.KeyPress
+                and event.matches(QKeySequence.StandardKey.Paste)):
+            self.paste_override()
+            return True
+        return super().eventFilter(source, event)
 
 
 if __name__ == "__main__":
