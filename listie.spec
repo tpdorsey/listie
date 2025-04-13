@@ -47,4 +47,9 @@ app = BUNDLE(
     name='Listie.app',
     icon='listie-icon.icns',
     bundle_identifier=None,
+    info_plist={
+        'NSHighResolutionCapable': 'True',
+        'CFBundleShortVersionString': '2.0.0',
+        'NSHumanReadableCopyright': '© Terrence Dorsey 2025'
+    }
 )
